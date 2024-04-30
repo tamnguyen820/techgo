@@ -1,0 +1,5 @@
+rss_feeds:
+  - url: https://www.theverge.com/tech/rss/index.xml
+    name: The Verge
+  - url: https://www.wired.com/feed/rss
+    name: Wired
