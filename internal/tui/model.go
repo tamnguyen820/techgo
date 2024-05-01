@@ -16,13 +16,13 @@ type model struct {
 	list list.Model
 }
 
-type item struct {
+type customItem struct {
 	title, authors, feedName, url string
 	publishedTime                 *time.Time
 }
 
-func (i item) Title() string { return i.title }
-func (i item) Description() string {
+func (i customItem) Title() string { return i.title }
+func (i customItem) Description() string {
 	// Calculate how much time has passed since the published time
 	timePassed := time.Since(*i.publishedTime)
 	// Round to the nearest minute, hour, or day
@@ -40,7 +40,7 @@ func (i item) Description() string {
 
 	return fmt.Sprintf("%s | %s | %s ago", i.feedName, i.authors, timePassedRounded)
 }
-func (i item) FilterValue() string { return i.title }
+func (i customItem) FilterValue() string { return i.title }
 
 func (m model) Init() tea.Cmd {
 	return nil
@@ -52,7 +52,7 @@ func NewModel() (model, error) {
 		return model{}, err
 	}
 
-	var itemList items
+	var itemList customItemList
 	for _, feed := range allFeeds {
 		for _, entry := range feed.Feed.Items {
 			var allAuthorNames []string
@@ -61,7 +61,7 @@ func NewModel() (model, error) {
 			}
 			allAuthorsStr := strings.Join(allAuthorNames, ", ")
 
-			itemList = append(itemList, item{
+			itemList = append(itemList, customItem{
 				title:         entry.Title,
 				authors:       allAuthorsStr,
 				feedName:      feed.FeedInfo.Name,
@@ -83,16 +83,16 @@ func NewModel() (model, error) {
 	return m, nil
 }
 
-type items []item
+type customItemList []customItem
 
-func (s items) Len() int {
+func (s customItemList) Len() int {
 	return len(s)
 }
 
-func (s items) Less(i, j int) bool {
+func (s customItemList) Less(i, j int) bool {
 	return s[i].publishedTime.After(*s[j].publishedTime)
 }
 
-func (s items) Swap(i, j int) {
+func (s customItemList) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
