@@ -13,12 +13,16 @@ import (
 )
 
 type model struct {
-	list list.Model
+	list         list.Model
+	delegateKeys *delegateKeyMap
 }
 
 type customItem struct {
-	title, authors, feedName, url string
-	publishedTime                 *time.Time
+	title         string
+	authors       string
+	feedName      string
+	url           string
+	publishedTime *time.Time
 }
 
 func (i customItem) Title() string { return i.title }
@@ -47,6 +51,9 @@ func (m model) Init() tea.Cmd {
 }
 
 func NewModel() (model, error) {
+	var delegateKeys = newDelegateKeyMap()
+	delegate := newItemDelegate(delegateKeys)
+
 	allFeeds, err := rss.FetchAllFeeds()
 	if err != nil {
 		return model{}, err
@@ -77,7 +84,10 @@ func NewModel() (model, error) {
 		tuiItems[i] = item
 	}
 
-	m := model{list: list.New(tuiItems, list.NewDefaultDelegate(), 0, 0)}
+	m := model{
+		list:         list.New(tuiItems, delegate, 0, 0),
+		delegateKeys: delegateKeys,
+	}
 	m.list.Title = "TechGo"
 
 	return m, nil

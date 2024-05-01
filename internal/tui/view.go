@@ -5,6 +5,9 @@ import (
 )
 
 var appStyle = lipgloss.NewStyle().Padding(3, 3)
+var statusMessageStyle = lipgloss.NewStyle().
+	Foreground(lipgloss.AdaptiveColor{Light: "#04B575", Dark: "#04B575"}).
+	Render
 
 func (m model) View() string {
 	return appStyle.Render(m.list.View())
