@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	m, err := tui.InitialModel()
+	m, err := tui.NewModel()
 	if err != nil {
 		fmt.Println("Error initializing model:", err)
 		os.Exit(1)

@@ -4,8 +4,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var docStyle = lipgloss.NewStyle().Margin(1, 2)
+var appStyle = lipgloss.NewStyle().Padding(3, 3)
 
 func (m model) View() string {
-	return docStyle.Render(m.list.View())
+	return appStyle.Render(m.list.View())
 }
