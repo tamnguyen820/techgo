@@ -4,7 +4,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-var appStyle = lipgloss.NewStyle().Padding(3, 3)
+var appStyle = lipgloss.NewStyle().Padding(2, 2)
 var statusMessageStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.AdaptiveColor{Light: "#04B575", Dark: "#04B575"}).
 	Render

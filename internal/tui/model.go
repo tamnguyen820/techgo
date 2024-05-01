@@ -35,14 +35,21 @@ func (i customItem) Description() string {
 	daysPassed := int(timePassed.Hours() / 24)
 	var timePassedRounded string
 	if daysPassed > 0 {
-		timePassedRounded = fmt.Sprintf("%dd", daysPassed)
+		timePassedRounded = fmt.Sprintf("%dd ago", daysPassed)
 	} else if hoursPassed > 0 {
-		timePassedRounded = fmt.Sprintf("%dh", hoursPassed)
+		timePassedRounded = fmt.Sprintf("%dh ago", hoursPassed)
 	} else {
-		timePassedRounded = fmt.Sprintf("%dm", minutesPassed)
+		timePassedRounded = fmt.Sprintf("%dm ago", minutesPassed)
 	}
 
-	return fmt.Sprintf("%s | %s | %s ago", i.feedName, i.authors, timePassedRounded)
+	description := []string{}
+	for _, s := range []string{i.feedName, i.authors, timePassedRounded} {
+		if len(s) > 0 {
+			description = append(description, s)
+		}
+	}
+
+	return strings.Join(description, " | ")
 }
 func (i customItem) FilterValue() string { return i.title }
 
@@ -69,7 +76,7 @@ func NewModel() (model, error) {
 			allAuthorsStr := strings.Join(allAuthorNames, ", ")
 
 			itemList = append(itemList, customItem{
-				title:         entry.Title,
+				title:         strings.TrimSpace(entry.Title),
 				authors:       allAuthorsStr,
 				feedName:      feed.FeedInfo.Name,
 				url:           entry.Link,
