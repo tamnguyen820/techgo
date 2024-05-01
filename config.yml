@@ -11,3 +11,5 @@ rss_feeds:
     name: Ars Technica
   - url: https://www.techradar.com/feeds/tag/computing
     name: TechRadar
+  - url: https://hnrss.org/frontpage
+    name: Hacker News
