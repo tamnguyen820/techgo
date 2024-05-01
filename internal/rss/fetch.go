@@ -8,7 +8,7 @@ import (
 )
 
 type RSSFeedInfo struct {
-	URL string `yaml:"url"`
+	URL  string `yaml:"url"`
 	Name string `yaml:"name"`
 }
 
@@ -18,7 +18,7 @@ type Config struct {
 
 type RSSFeed struct {
 	FeedInfo RSSFeedInfo
-	Feed *gofeed.Feed
+	Feed     *gofeed.Feed
 }
 
 func FetchAllFeeds() ([]*RSSFeed, error) {
