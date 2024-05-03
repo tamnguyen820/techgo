@@ -2,11 +2,12 @@ package tui
 
 import (
 	"fmt"
-	"sort"
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/tamnguyen820/techgo/internal/rss"
@@ -14,7 +15,9 @@ import (
 
 type model struct {
 	list         list.Model
+	keys         *listKeyMap
 	delegateKeys *delegateKeyMap
+	fetchService *rss.FetchService
 }
 
 type customItem struct {
@@ -53,63 +56,50 @@ func (i customItem) Description() string {
 }
 func (i customItem) FilterValue() string { return i.title + i.feedName }
 
+type listKeyMap struct {
+	refresh key.Binding
+}
+
 func (m model) Init() tea.Cmd {
-	return nil
+	return tea.Batch(tea.SetWindowTitle("TechGo"), RefreshMsg())
 }
 
 func NewModel(fetchService *rss.FetchService) (model, error) {
 	var delegateKeys = newDelegateKeyMap()
 	delegate := newItemDelegate(delegateKeys)
+	var listKeys = newListKeyMap()
 
-	allFeeds, err := fetchService.FetchAllFeeds()
-	if err != nil {
-		return model{}, err
-	}
+	tuiItems := []list.Item{}
 
-	var itemList customItemList
-	for _, feed := range allFeeds {
-		for _, entry := range feed.Feed.Items {
-			var allAuthorNames []string
-			for _, author := range entry.Authors {
-				allAuthorNames = append(allAuthorNames, author.Name)
-			}
-			allAuthorsStr := strings.Join(allAuthorNames, ", ")
-
-			itemList = append(itemList, customItem{
-				title:         strings.TrimSpace(entry.Title),
-				authors:       allAuthorsStr,
-				feedName:      feed.FeedInfo.Name,
-				url:           entry.Link,
-				publishedTime: entry.PublishedParsed})
+	articleList := list.New(tuiItems, delegate, 0, 0)
+	articleList.Title = "Tech News 📰"
+	articleList.AdditionalFullHelpKeys = func() []key.Binding {
+		return []key.Binding{
+			listKeys.refresh,
 		}
 	}
-	// Sort the items by published time
-	sort.Sort(itemList)
-
-	tuiItems := make([]list.Item, len(itemList))
-	for i, item := range itemList {
-		tuiItems[i] = item
+	articleList.AdditionalShortHelpKeys = func() []key.Binding {
+		return []key.Binding{
+			listKeys.refresh,
+		}
 	}
+	articleList.SetSpinner(spinner.Globe)
 
 	m := model{
-		list:         list.New(tuiItems, delegate, 0, 0),
+		list:         articleList,
+		keys:         listKeys,
 		delegateKeys: delegateKeys,
+		fetchService: fetchService,
 	}
-	m.list.Title = "TechGo"
 
 	return m, nil
 }
 
-type customItemList []customItem
-
-func (s customItemList) Len() int {
-	return len(s)
-}
-
-func (s customItemList) Less(i, j int) bool {
-	return s[i].publishedTime.After(*s[j].publishedTime)
-}
-
-func (s customItemList) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
+func newListKeyMap() *listKeyMap {
+	return &listKeyMap{
+		refresh: key.NewBinding(
+			key.WithKeys("r"),
+			key.WithHelp("r", "refresh"),
+		),
+	}
 }

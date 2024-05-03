@@ -45,37 +45,42 @@ func (service *FetchService) FetchAllFeeds() ([]*RSSFeed, error) {
 	}
 
 	allFeeds, err := fetchAllFeedsParallel(config)
-	return allFeeds, err
+	if err != nil {
+		return nil, err
+	}
+
+	return allFeeds, nil
 }
 
 func fetchAllFeedsParallel(config Config) ([]*RSSFeed, error) {
 	var wg sync.WaitGroup
-	feedChan := make(chan *RSSFeed)
+	wg.Add(len(config.Feeds))
+	allFeeds := make([]*RSSFeed, len(config.Feeds))
+	errChan := make(chan error, len(config.Feeds))
 
 	// Spawn goroutines to fetch each feed concurrently
-	for _, rssFeed := range config.Feeds {
-		wg.Add(1)
-		go func(rssFeed RSSFeedInfo) {
+	for i, rssFeed := range config.Feeds {
+		go func(index int, rssFeed RSSFeedInfo) {
 			defer wg.Done()
 			feed, err := fetchFeed(rssFeed.URL)
 			if err != nil {
+				errChan <- err
 				return
 			}
-			feedChan <- &RSSFeed{FeedInfo: rssFeed, Feed: feed}
-		}(rssFeed)
+			allFeeds[index] = &RSSFeed{FeedInfo: rssFeed, Feed: feed}
+		}(i, rssFeed)
 	}
-
-	// Aggregate fetched feeds
-	var allFeeds []*RSSFeed
-	go func() {
-		for feed := range feedChan {
-			allFeeds = append(allFeeds, feed)
-		}
-	}()
 
 	// Wait for all goroutines to finish
 	wg.Wait()
-	close(feedChan)
+	close(errChan)
+
+	// Check for errors
+	for err := range errChan {
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return allFeeds, nil
 }
