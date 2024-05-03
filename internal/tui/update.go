@@ -19,6 +19,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch {
 		case key.Matches(msg, m.keys.refresh):
 			m.list.StartSpinner()
+			m.list.NewStatusMessage(statusMessageStyle("Updating feed..."))
 
 			return m, func() tea.Msg {
 				newItems, err := fetchAndSortArticles(m)
