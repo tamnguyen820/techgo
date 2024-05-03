@@ -1,3 +1,52 @@
 # TechGo
 
-A TUI RSS feed focused on tech news.
+**TechGo** is a terminal application that aggregates articles from RSS feeds focused on tech news. The project is written in Go using the wonderful [Bubble Tea framework](https://github.com/charmbracelet/bubbletea).
+
+By default, news sources include:
+
+- The Verge
+- Wired
+- TechCrunch
+- Mashable
+- Ars Technica
+- TechRadar
+- More?
+
+## Quick start
+
+### Binaries
+
+_Coming Soon<sup>TM</sup>_
+
+### Docker
+
+_Coming Soon<sup>TM</sup>_
+
+### Running from source code
+
+```bash
+git clone https://github.com/tamnguyen820/techgo
+cd techgo
+go run cmd/techgo/main.go
+```
+
+## Configuration
+
+The file [config.yml](config.yml) stores the sources of RSS feeds.
+
+```bash
+rss_feeds:
+  - url: https://www.theverge.com/tech/rss/index.xml
+    name: The Verge
+  - url: https://www.wired.com/feed/rss
+    name: Wired
+  ...
+```
+
+Change the config file as needed.
+
+In order to include a new RSS feed:
+
+1. Look up `<news_source> RSS feed`
+2. Copy the link to the feed.
+3. Add to [config.yml](config.yml) the URL and feed bane.
