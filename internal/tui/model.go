@@ -51,7 +51,7 @@ func (i customItem) Description() string {
 
 	return strings.Join(description, " | ")
 }
-func (i customItem) FilterValue() string { return i.title }
+func (i customItem) FilterValue() string { return i.title + i.feedName }
 
 func (m model) Init() tea.Cmd {
 	return nil
