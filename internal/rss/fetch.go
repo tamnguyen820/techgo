@@ -44,7 +44,7 @@ func (service *FetchService) FetchAllFeeds() ([]*RSSFeed, error) {
 		return nil, err
 	}
 
-	allFeeds, err := fetchAllFeedsParallel(config)
+	allFeeds, err := fetchAllFeedsInParallel(config)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (service *FetchService) FetchAllFeeds() ([]*RSSFeed, error) {
 	return allFeeds, nil
 }
 
-func fetchAllFeedsParallel(config Config) ([]*RSSFeed, error) {
+func fetchAllFeedsInParallel(config Config) ([]*RSSFeed, error) {
 	var wg sync.WaitGroup
 	wg.Add(len(config.Feeds))
 	allFeeds := make([]*RSSFeed, len(config.Feeds))
