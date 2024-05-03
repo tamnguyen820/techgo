@@ -57,11 +57,11 @@ func (m model) Init() tea.Cmd {
 	return nil
 }
 
-func NewModel() (model, error) {
+func NewModel(fetchService *rss.FetchService) (model, error) {
 	var delegateKeys = newDelegateKeyMap()
 	delegate := newItemDelegate(delegateKeys)
 
-	allFeeds, err := rss.FetchAllFeeds()
+	allFeeds, err := fetchService.FetchAllFeeds()
 	if err != nil {
 		return model{}, err
 	}

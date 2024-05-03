@@ -1,16 +1,24 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
 
 	tea "github.com/charmbracelet/bubbletea"
 
+	"github.com/tamnguyen820/techgo/internal/rss"
 	"github.com/tamnguyen820/techgo/internal/tui"
 )
 
 func main() {
-	m, err := tui.NewModel()
+	var configFile string
+	flag.StringVar(&configFile, "config", "", "path to the config file")
+	flag.Parse()
+
+	fetchService := rss.NewFetchService(configFile)
+
+	m, err := tui.NewModel(fetchService)
 	if err != nil {
 		fmt.Println("Error initializing model:", err)
 		os.Exit(1)

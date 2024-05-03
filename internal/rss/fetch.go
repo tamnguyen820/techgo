@@ -8,6 +8,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type FetchService struct {
+	configFilePath string
+}
+
 type RSSFeedInfo struct {
 	URL  string `yaml:"url"`
 	Name string `yaml:"name"`
@@ -22,8 +26,15 @@ type RSSFeed struct {
 	Feed     *gofeed.Feed
 }
 
-func FetchAllFeeds() ([]*RSSFeed, error) {
-	configFile, err := os.ReadFile("config.yml")
+func NewFetchService(configFilePath string) *FetchService {
+	if len(configFilePath) == 0 {
+		configFilePath = "config.yml" // default config file path
+	}
+	return &FetchService{configFilePath: configFilePath}
+}
+
+func (service *FetchService) FetchAllFeeds() ([]*RSSFeed, error) {
+	configFile, err := os.ReadFile(service.configFilePath)
 	if err != nil {
 		return nil, err
 	}
@@ -32,15 +43,6 @@ func FetchAllFeeds() ([]*RSSFeed, error) {
 	if err := yaml.Unmarshal(configFile, &config); err != nil {
 		return nil, err
 	}
-
-	// var allFeeds []*RSSFeed
-	// for _, rssFeed := range config.Feeds {
-	// 	feed, err := fetchFeed(rssFeed.URL)
-	// 	if err == nil {
-	// 		allFeeds = append(allFeeds, &RSSFeed{FeedInfo: rssFeed, Feed: feed})
-	// 	}
-	// }
-	// return allFeeds, nil
 
 	allFeeds, err := fetchAllFeedsParallel(config)
 	return allFeeds, err
