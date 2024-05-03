@@ -20,7 +20,14 @@ _Coming Soon<sup>TM</sup>_
 
 ### Docker
 
-_Coming Soon<sup>TM</sup>_
+```bash
+# 1. Build image and run container
+docker build -t techgo .
+docker run -it --rm techgo
+
+# 2. Or pull the image
+...
+```
 
 ### Running from source code
 
@@ -32,7 +39,7 @@ go run cmd/techgo/main.go
 
 ## Configuration
 
-The file [config.yml](config.yml) stores the sources of RSS feeds.
+The file [config.yml](config.yml) stores the sources of RSS feeds. Change the config file as needed.
 
 ```bash
 rss_feeds:
@@ -43,10 +50,14 @@ rss_feeds:
   ...
 ```
 
-Change the config file as needed.
-
 In order to include a new RSS feed:
 
 1. Look up `<news_source> RSS feed`
 2. Copy the link to the feed.
 3. Add to [config.yml](config.yml) the URL and feed bane.
+
+Alternatively, you can point to a different config file using the `-config` flag, for example:
+
+```bash
+go run cmd/techgo/main.go -config myconfig.yml
+```
