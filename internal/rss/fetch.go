@@ -53,10 +53,11 @@ func (service *FetchService) FetchAllFeeds() ([]*RSSFeed, error) {
 }
 
 func fetchAllFeedsInParallel(config Config) ([]*RSSFeed, error) {
+	numFeeds := len(config.Feeds)
 	var wg sync.WaitGroup
-	wg.Add(len(config.Feeds))
-	allFeeds := make([]*RSSFeed, len(config.Feeds))
-	errChan := make(chan error, len(config.Feeds))
+	wg.Add(numFeeds)
+	allFeeds := make([]*RSSFeed, numFeeds)
+	errChan := make(chan error, numFeeds)
 
 	// Spawn goroutines to fetch each feed concurrently
 	for i, rssFeed := range config.Feeds {
