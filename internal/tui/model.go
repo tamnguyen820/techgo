@@ -14,10 +14,9 @@ import (
 )
 
 type model struct {
-	list         list.Model
-	keys         *listKeyMap
-	delegateKeys *delegateKeyMap
-	rssService   *services.RSSService
+	list       list.Model
+	keys       *listKeyMap
+	rssService *services.RSSService
 }
 
 type customItem struct {
@@ -57,7 +56,8 @@ func (i customItem) Description() string {
 func (i customItem) FilterValue() string { return i.title + i.feedName }
 
 type listKeyMap struct {
-	refresh key.Binding
+	openInBrowser key.Binding
+	refresh       key.Binding
 }
 
 func (m model) Init() tea.Cmd {
@@ -65,31 +65,30 @@ func (m model) Init() tea.Cmd {
 }
 
 func NewModel(rssService *services.RSSService) (model, error) {
-	var delegateKeys = newDelegateKeyMap()
-	delegate := newItemDelegate(delegateKeys)
 	var listKeys = newListKeyMap()
 
 	tuiItems := []list.Item{}
 
-	articleList := list.New(tuiItems, delegate, 0, 0)
+	articleList := list.New(tuiItems, list.NewDefaultDelegate(), 0, 0)
 	articleList.Title = "Tech News 📰"
 	articleList.AdditionalFullHelpKeys = func() []key.Binding {
 		return []key.Binding{
+			listKeys.openInBrowser,
 			listKeys.refresh,
 		}
 	}
 	articleList.AdditionalShortHelpKeys = func() []key.Binding {
 		return []key.Binding{
+			listKeys.openInBrowser,
 			listKeys.refresh,
 		}
 	}
 	articleList.SetSpinner(spinner.Globe)
 
 	m := model{
-		list:         articleList,
-		keys:         listKeys,
-		delegateKeys: delegateKeys,
-		rssService:   rssService,
+		list:       articleList,
+		keys:       listKeys,
+		rssService: rssService,
 	}
 
 	return m, nil
@@ -97,6 +96,10 @@ func NewModel(rssService *services.RSSService) (model, error) {
 
 func newListKeyMap() *listKeyMap {
 	return &listKeyMap{
+		openInBrowser: key.NewBinding(
+			key.WithKeys("o"),
+			key.WithHelp("o", "open (browser)"),
+		),
 		refresh: key.NewBinding(
 			key.WithKeys("r"),
 			key.WithHelp("r", "refresh"),

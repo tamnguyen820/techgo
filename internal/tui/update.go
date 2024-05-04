@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"github.com/pkg/browser"
+
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -17,6 +19,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			break
 		}
 		switch {
+		case key.Matches(msg, m.keys.openInBrowser):
+			selectedItem := m.list.SelectedItem().(customItem)
+			if err := browser.OpenURL(selectedItem.url); err != nil {
+				return m, m.list.NewStatusMessage(statusMessageStyle("Unable to open link in browser"))
+			}
+			return m, m.list.NewStatusMessage(statusMessageStyle("Open link in browser"))
 		case key.Matches(msg, m.keys.refresh):
 			m.list.StartSpinner()
 			m.list.NewStatusMessage(statusMessageStyle("Updating feed..."))
