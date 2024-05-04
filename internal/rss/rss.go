@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type FetchService struct {
+type RSSService struct {
 	configFilePath string
 }
 
@@ -26,14 +26,14 @@ type RSSFeed struct {
 	Feed     *gofeed.Feed
 }
 
-func NewFetchService(configFilePath string) *FetchService {
+func NewRSSService(configFilePath string) *RSSService {
 	if len(configFilePath) == 0 {
 		configFilePath = "config.yml" // default config file path
 	}
-	return &FetchService{configFilePath: configFilePath}
+	return &RSSService{configFilePath: configFilePath}
 }
 
-func (service *FetchService) FetchAllFeeds() ([]*RSSFeed, error) {
+func (service *RSSService) FetchAllFeeds() ([]*RSSFeed, error) {
 	configFile, err := os.ReadFile(service.configFilePath)
 	if err != nil {
 		return nil, err

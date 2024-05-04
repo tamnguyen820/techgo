@@ -19,7 +19,7 @@ type RefreshDone struct {
 }
 
 func fetchAndSortArticles(m model) ([]list.Item, error) {
-	allFeeds, err := m.fetchService.FetchAllFeeds()
+	allFeeds, err := m.rssService.FetchAllFeeds()
 	if err != nil {
 		return nil, err
 	}

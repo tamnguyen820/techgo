@@ -16,9 +16,9 @@ func main() {
 	flag.StringVar(&configFile, "config", "", "path to the config file")
 	flag.Parse()
 
-	fetchService := rss.NewFetchService(configFile)
+	rssService := rss.NewRSSService(configFile)
 
-	m, err := tui.NewModel(fetchService)
+	m, err := tui.NewModel(rssService)
 	if err != nil {
 		fmt.Println("Error initializing model:", err)
 		os.Exit(1)

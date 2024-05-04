@@ -17,7 +17,7 @@ type model struct {
 	list         list.Model
 	keys         *listKeyMap
 	delegateKeys *delegateKeyMap
-	fetchService *rss.FetchService
+	rssService   *rss.RSSService
 }
 
 type customItem struct {
@@ -64,7 +64,7 @@ func (m model) Init() tea.Cmd {
 	return tea.Batch(tea.SetWindowTitle("TechGo"), RefreshMsg())
 }
 
-func NewModel(fetchService *rss.FetchService) (model, error) {
+func NewModel(rssService *rss.RSSService) (model, error) {
 	var delegateKeys = newDelegateKeyMap()
 	delegate := newItemDelegate(delegateKeys)
 	var listKeys = newListKeyMap()
@@ -89,7 +89,7 @@ func NewModel(fetchService *rss.FetchService) (model, error) {
 		list:         articleList,
 		keys:         listKeys,
 		delegateKeys: delegateKeys,
-		fetchService: fetchService,
+		rssService:   rssService,
 	}
 
 	return m, nil
