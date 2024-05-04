@@ -1,4 +1,4 @@
-package rss
+package services
 
 import (
 	"os"

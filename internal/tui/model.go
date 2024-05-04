@@ -10,14 +10,14 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/tamnguyen820/techgo/internal/rss"
+	"github.com/tamnguyen820/techgo/internal/services"
 )
 
 type model struct {
 	list         list.Model
 	keys         *listKeyMap
 	delegateKeys *delegateKeyMap
-	rssService   *rss.RSSService
+	rssService   *services.RSSService
 }
 
 type customItem struct {
@@ -64,7 +64,7 @@ func (m model) Init() tea.Cmd {
 	return tea.Batch(tea.SetWindowTitle("TechGo"), RefreshMsg())
 }
 
-func NewModel(rssService *rss.RSSService) (model, error) {
+func NewModel(rssService *services.RSSService) (model, error) {
 	var delegateKeys = newDelegateKeyMap()
 	delegate := newItemDelegate(delegateKeys)
 	var listKeys = newListKeyMap()

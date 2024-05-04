@@ -7,7 +7,7 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 
-	"github.com/tamnguyen820/techgo/internal/rss"
+	"github.com/tamnguyen820/techgo/internal/services"
 	"github.com/tamnguyen820/techgo/internal/tui"
 )
 
@@ -16,7 +16,7 @@ func main() {
 	flag.StringVar(&configFile, "config", "", "path to the config file")
 	flag.Parse()
 
-	rssService := rss.NewRSSService(configFile)
+	rssService := services.NewRSSService(configFile)
 
 	m, err := tui.NewModel(rssService)
 	if err != nil {
