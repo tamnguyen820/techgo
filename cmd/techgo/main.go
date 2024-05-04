@@ -17,8 +17,9 @@ func main() {
 	flag.Parse()
 
 	rssService := services.NewRSSService(configFile)
+	articleService := services.NewArticleService()
 
-	m, err := tui.NewModel(rssService)
+	m, err := tui.NewModel(rssService, articleService)
 	if err != nil {
 		fmt.Println("Error initializing model:", err)
 		os.Exit(1)

@@ -25,6 +25,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, m.list.NewStatusMessage(statusMessageStyle("Unable to open link in browser"))
 			}
 			return m, m.list.NewStatusMessage(statusMessageStyle("Open link in browser"))
+		case key.Matches(msg, m.keys.openInTerminal):
+			selectedItem := m.list.SelectedItem().(customItem)
+			if article, err := m.articleService.ExtractArticle(selectedItem.url); err != nil {
+				return m, m.list.NewStatusMessage(statusMessageStyle("Error extracting article"))
+			} else {
+				return m, m.list.NewStatusMessage(statusMessageStyle(article.Title))
+			}
 		case key.Matches(msg, m.keys.refresh):
 			m.list.StartSpinner()
 			m.list.NewStatusMessage(statusMessageStyle("Updating feed..."))

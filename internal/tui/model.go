@@ -14,9 +14,10 @@ import (
 )
 
 type model struct {
-	list       list.Model
-	keys       *listKeyMap
-	rssService *services.RSSService
+	list           list.Model
+	keys           *listKeyMap
+	rssService     *services.RSSService
+	articleService *services.ArticleService
 }
 
 type customItem struct {
@@ -56,15 +57,16 @@ func (i customItem) Description() string {
 func (i customItem) FilterValue() string { return i.title + i.feedName }
 
 type listKeyMap struct {
-	openInBrowser key.Binding
-	refresh       key.Binding
+	openInBrowser  key.Binding
+	openInTerminal key.Binding
+	refresh        key.Binding
 }
 
 func (m model) Init() tea.Cmd {
 	return tea.Batch(tea.SetWindowTitle("TechGo"), RefreshMsg())
 }
 
-func NewModel(rssService *services.RSSService) (model, error) {
+func NewModel(rssService *services.RSSService, articleService *services.ArticleService) (model, error) {
 	var listKeys = newListKeyMap()
 
 	tuiItems := []list.Item{}
@@ -74,21 +76,24 @@ func NewModel(rssService *services.RSSService) (model, error) {
 	articleList.AdditionalFullHelpKeys = func() []key.Binding {
 		return []key.Binding{
 			listKeys.openInBrowser,
+			listKeys.openInTerminal,
 			listKeys.refresh,
 		}
 	}
 	articleList.AdditionalShortHelpKeys = func() []key.Binding {
 		return []key.Binding{
 			listKeys.openInBrowser,
+			listKeys.openInTerminal,
 			listKeys.refresh,
 		}
 	}
 	articleList.SetSpinner(spinner.Globe)
 
 	m := model{
-		list:       articleList,
-		keys:       listKeys,
-		rssService: rssService,
+		list:           articleList,
+		keys:           listKeys,
+		rssService:     rssService,
+		articleService: articleService,
 	}
 
 	return m, nil
@@ -99,6 +104,10 @@ func newListKeyMap() *listKeyMap {
 		openInBrowser: key.NewBinding(
 			key.WithKeys("o"),
 			key.WithHelp("o", "open (browser)"),
+		),
+		openInTerminal: key.NewBinding(
+			key.WithKeys(" ", "enter"),
+			key.WithHelp("space", "open (terminal)"),
 		),
 		refresh: key.NewBinding(
 			key.WithKeys("r"),
