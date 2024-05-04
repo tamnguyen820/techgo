@@ -26,11 +26,19 @@ type RSSFeed struct {
 	Feed     *gofeed.Feed
 }
 
+var (
+	rssService     *RSSService
+	rssServiceOnce sync.Once
+)
+
 func NewRSSService(configFilePath string) *RSSService {
-	if len(configFilePath) == 0 {
-		configFilePath = "config.yml" // default config file path
-	}
-	return &RSSService{configFilePath: configFilePath}
+	rssServiceOnce.Do(func() {
+		if len(configFilePath) == 0 {
+			configFilePath = "config.yml" // default config file path
+		}
+		rssService = &RSSService{configFilePath}
+	})
+	return rssService
 }
 
 func (service *RSSService) FetchAllFeeds() ([]*RSSFeed, error) {
