@@ -31,6 +31,7 @@ var (
 	rssServiceOnce sync.Once
 )
 
+// Singleton
 func NewRSSService(configFilePath string) *RSSService {
 	rssServiceOnce.Do(func() {
 		if len(configFilePath) == 0 {
