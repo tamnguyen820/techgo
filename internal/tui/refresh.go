@@ -14,11 +14,13 @@ func RefreshMsg() tea.Cmd {
 	}
 }
 
+type StartRefresh struct{}
+
 type RefreshDone struct {
 	articles []list.Item
 }
 
-func fetchAndSortArticles(m model) ([]list.Item, error) {
+func FetchAndSortArticles(m model) ([]list.Item, error) {
 	allFeeds, err := m.rssService.FetchAllFeeds()
 	if err != nil {
 		return nil, err

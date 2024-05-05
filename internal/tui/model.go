@@ -7,7 +7,6 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
-	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/tamnguyen820/techgo/internal/services"
@@ -87,7 +86,7 @@ func NewModel(rssService *services.RSSService, articleService *services.ArticleS
 			listKeys.refresh,
 		}
 	}
-	articleList.SetSpinner(spinner.Globe)
+	articleList.SetSpinner(FastLineSpinner)
 
 	m := model{
 		list:           articleList,

@@ -33,16 +33,31 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, m.list.NewStatusMessage(statusMessageStyle(article.Title))
 			}
 		case key.Matches(msg, m.keys.refresh):
-			m.list.StartSpinner()
-			m.list.NewStatusMessage(statusMessageStyle("Updating feed..."))
+			// m.list.StartSpinner()
+			// m.list.NewStatusMessage(statusMessageStyle("Updating feed..."))
 
-			return m, func() tea.Msg {
-				newItems, err := fetchAndSortArticles(m)
-				if err != nil {
-					return m.list.NewStatusMessage(statusMessageStyle("Error fetching articles"))
-				}
-				return RefreshDone{articles: newItems}
+			// return m, func() tea.Msg {
+			// 	newItems, err := FetchAndSortArticles(m)
+			// 	if err != nil {
+			// 		return m.list.NewStatusMessage(statusMessageStyle("Error fetching articles"))
+			// 	}
+			// 	return RefreshDone{articles: newItems}
+			// }
+			return m, tea.Batch(
+				m.list.StartSpinner(),
+				m.list.NewStatusMessage(statusMessageStyle("Updating feed...")),
+				func() tea.Msg {
+					return StartRefresh{}
+				},
+			)
+		}
+	case StartRefresh:
+		return m, func() tea.Msg {
+			newItems, err := FetchAndSortArticles(m)
+			if err != nil {
+				return m.list.NewStatusMessage(statusMessageStyle("Error fetching articles"))
 			}
+			return RefreshDone{articles: newItems}
 		}
 	case RefreshDone:
 		m.list.StopSpinner()
