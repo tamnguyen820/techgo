@@ -13,7 +13,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		h, v := appStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
+		m.articleViewPort.Width = msg.Width - h*2
+		m.articleViewPort.Height = msg.Height - v*2
 	case tea.KeyMsg:
+		// TODO: Add a keybinding to go back to the feed view
+		if msg.Type == tea.KeyCtrlC || msg.Type == tea.KeyEscape {
+			return m, tea.Quit
+		}
 		// Don't match any key below if the list is filtering
 		if m.list.FilterState() == list.Filtering {
 			break
@@ -30,9 +36,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if article, err := m.articleService.ExtractArticle(selectedItem.url); err != nil {
 				return m, m.list.NewStatusMessage(statusMessageStyle("Error extracting article"))
 			} else {
-				// TODO: Open article in terminal
 				m.viewMode = ArticleView
-				return m, m.list.NewStatusMessage(statusMessageStyle(article.Title))
+				m.currentArticle = &ArticleInfo{
+					Title:         selectedItem.title,
+					FeedName:      selectedItem.feedName,
+					Authors:       selectedItem.authors,
+					URL:           selectedItem.url,
+					PublishedTime: selectedItem.publishedTime,
+					CleanedText:   article.CleanedText,
+				}
+				rendered, err := glamourRenderer.Render(m.currentArticle.Render())
+				if err != nil {
+					return m, m.list.NewStatusMessage(statusMessageStyle("Error rendering article"))
+				}
+				m.articleViewPort.SetContent(rendered)
+				return m, m.list.NewStatusMessage(statusMessageStyle("Open article in terminal"))
 			}
 		case key.Matches(msg, m.keys.refresh):
 			return m, tea.Batch(
@@ -56,9 +74,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		statusCmd := m.list.NewStatusMessage(statusMessageStyle("Feed updated!"))
 		setItemsCmd := m.list.SetItems(msg.articles)
 		return m, tea.Batch(statusCmd, setItemsCmd)
+
 	}
 
 	var cmd tea.Cmd
-	m.list, cmd = m.list.Update(msg)
+	switch m.viewMode {
+	case FeedView:
+		m.list, cmd = m.list.Update(msg)
+	case ArticleView:
+		m.articleViewPort, cmd = m.articleViewPort.Update(msg)
+	}
 	return m, cmd
 }

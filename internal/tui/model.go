@@ -7,17 +7,20 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/tamnguyen820/techgo/internal/services"
 )
 
 type model struct {
-	list           list.Model
-	keys           *listKeyMap
-	rssService     *services.RSSService
-	articleService *services.ArticleService
-	viewMode       ViewMode
+	list            list.Model
+	keys            *listKeyMap
+	rssService      *services.RSSService
+	articleService  *services.ArticleService
+	viewMode        ViewMode
+	articleViewPort viewport.Model
+	currentArticle  *ArticleInfo
 }
 
 type ViewMode int
@@ -113,12 +116,17 @@ func NewModel(rssService *services.RSSService, articleService *services.ArticleS
 	}
 	articleList.SetSpinner(FastLineSpinner)
 
+	// TODO: change this?
+	articleViewPort := viewport.New(100, 20)
+	articleViewPort.Style = viewportStyle
+
 	m := model{
-		list:           articleList,
-		keys:           listKeys,
-		rssService:     rssService,
-		articleService: articleService,
-		viewMode:       FeedView,
+		list:            articleList,
+		keys:            listKeys,
+		rssService:      rssService,
+		articleService:  articleService,
+		viewMode:        FeedView,
+		articleViewPort: articleViewPort,
 	}
 
 	return m, nil
