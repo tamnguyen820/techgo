@@ -9,6 +9,6 @@ import (
 var (
 	FastLineSpinner = spinner.Spinner{
 		Frames: []string{"|", "/", "-", "\\"},
-		FPS:    time.Second / 100,
+		FPS:    time.Second / 50,
 	}
 )
