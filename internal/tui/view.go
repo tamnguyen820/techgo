@@ -12,6 +12,7 @@ var statusMessageStyle = lipgloss.NewStyle().
 var viewportStyle = lipgloss.NewStyle().
 	BorderStyle(lipgloss.RoundedBorder()).
 	BorderForeground(lipgloss.Color("62"))
+var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Render
 
 var glamourRenderer, _ = glamour.NewTermRenderer(
 	glamour.WithAutoStyle(),
@@ -32,5 +33,9 @@ func (m model) showFeedView() string {
 }
 
 func (m model) showArticleView() string {
-	return m.articleViewPort.View()
+	return m.articleViewPort.View() + m.showArticleHelp()
+}
+
+func (m model) showArticleHelp() string {
+	return helpStyle("\n  ↑/↓: Navigate • o: Open (browser) • esc: Go back • q: Quit\n")
 }

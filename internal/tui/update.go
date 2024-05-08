@@ -20,6 +20,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.viewMode = FeedView
 			return m, nil
 		}
+		switch msg.String() {
+		case "q", "ctrl+c", "esc":
+			return m, tea.Quit
+		}
 		// Don't match any key below if the list is filtering
 		if m.list.FilterState() == list.Filtering {
 			break
