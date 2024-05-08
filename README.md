@@ -12,7 +12,6 @@ By default, news sources include:
 - Mashable
 - Ars Technica
 - TechRadar
-- Bloomberg
 - More?
 
 ## Quick start

@@ -11,5 +11,3 @@ rss_feeds:
     name: Ars Technica
   - url: https://www.techradar.com/feeds/tag/computing
     name: TechRadar
-  - url: https://feeds.bloomberg.com/technology/news.rss
-    name: Bloomberg
