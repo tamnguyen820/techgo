@@ -30,6 +30,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if article, err := m.articleService.ExtractArticle(selectedItem.url); err != nil {
 				return m, m.list.NewStatusMessage(statusMessageStyle("Error extracting article"))
 			} else {
+				// TODO: Open article in terminal
+				m.viewMode = ArticleView
 				return m, m.list.NewStatusMessage(statusMessageStyle(article.Title))
 			}
 		case key.Matches(msg, m.keys.refresh):

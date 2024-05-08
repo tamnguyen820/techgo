@@ -17,7 +17,15 @@ type model struct {
 	keys           *listKeyMap
 	rssService     *services.RSSService
 	articleService *services.ArticleService
+	viewMode       ViewMode
 }
+
+type ViewMode int
+
+const (
+	FeedView ViewMode = iota
+	ArticleView
+)
 
 type customItem struct {
 	title         string
@@ -61,6 +69,23 @@ type listKeyMap struct {
 	refresh        key.Binding
 }
 
+func newListKeyMap() *listKeyMap {
+	return &listKeyMap{
+		openInBrowser: key.NewBinding(
+			key.WithKeys("o"),
+			key.WithHelp("o", "open (browser)"),
+		),
+		openInTerminal: key.NewBinding(
+			key.WithKeys(" ", "enter"),
+			key.WithHelp("space", "open (terminal)"),
+		),
+		refresh: key.NewBinding(
+			key.WithKeys("r"),
+			key.WithHelp("r", "refresh"),
+		),
+	}
+}
+
 func (m model) Init() tea.Cmd {
 	return tea.Batch(tea.SetWindowTitle("TechGo"), RefreshMsg())
 }
@@ -93,24 +118,8 @@ func NewModel(rssService *services.RSSService, articleService *services.ArticleS
 		keys:           listKeys,
 		rssService:     rssService,
 		articleService: articleService,
+		viewMode:       FeedView,
 	}
 
 	return m, nil
-}
-
-func newListKeyMap() *listKeyMap {
-	return &listKeyMap{
-		openInBrowser: key.NewBinding(
-			key.WithKeys("o"),
-			key.WithHelp("o", "open (browser)"),
-		),
-		openInTerminal: key.NewBinding(
-			key.WithKeys(" ", "enter"),
-			key.WithHelp("space", "open (terminal)"),
-		),
-		refresh: key.NewBinding(
-			key.WithKeys("r"),
-			key.WithHelp("r", "refresh"),
-		),
-	}
 }
