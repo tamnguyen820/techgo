@@ -116,8 +116,7 @@ func NewModel(rssService *services.RSSService, articleService *services.ArticleS
 	}
 	articleList.SetSpinner(FastLineSpinner)
 
-	// TODO: change this?
-	articleViewPort := viewport.New(100, 20)
+	articleViewPort := viewport.Model{}
 	articleViewPort.Style = viewportStyle
 
 	m := model{

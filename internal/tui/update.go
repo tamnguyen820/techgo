@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/glamour"
 )
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -14,7 +15,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		h, v := appStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
 		m.articleViewPort.Width = msg.Width - h
-		m.articleViewPort.Height = msg.Height - v
+		m.articleViewPort.Height = msg.Height - 5
+		glamour, err := glamour.NewTermRenderer(
+			glamour.WithAutoStyle(),
+			glamour.WithWordWrap(m.articleViewPort.Width),
+		)
+		if err == nil {
+			glamourRenderer = glamour
+			if m.viewMode == ArticleView {
+				rendered, err := glamourRenderer.Render(m.currentArticle.Render())
+				if err == nil {
+					m.articleViewPort.SetContent(rendered)
+				}
+			}
+		}
 	case tea.KeyMsg:
 		if msg.Type == tea.KeyEscape && m.viewMode == ArticleView {
 			m.viewMode = FeedView

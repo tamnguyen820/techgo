@@ -24,8 +24,9 @@ func (m model) View() string {
 		return m.showFeedView()
 	case ArticleView:
 		return m.showArticleView()
+	default:
+		return ""
 	}
-	return ""
 }
 
 func (m model) showFeedView() string {
@@ -37,5 +38,5 @@ func (m model) showArticleView() string {
 }
 
 func (m model) showArticleHelp() string {
-	return helpStyle("\n  ↑/↓: Navigate • o: Open (browser) • esc: Go back • q: Quit\n")
+	return helpStyle("\n\n  ↑/↓/mousewheel: scroll • o: open (browser) • esc: back • q: quit\n")
 }
