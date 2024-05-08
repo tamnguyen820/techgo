@@ -13,12 +13,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		h, v := appStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
-		m.articleViewPort.Width = msg.Width - h*2
-		m.articleViewPort.Height = msg.Height - v*2
+		m.articleViewPort.Width = msg.Width - h
+		m.articleViewPort.Height = msg.Height - v
 	case tea.KeyMsg:
-		// TODO: Add a keybinding to go back to the feed view
-		if msg.Type == tea.KeyCtrlC || msg.Type == tea.KeyEscape {
-			return m, tea.Quit
+		if msg.Type == tea.KeyEscape && m.viewMode == ArticleView {
+			m.viewMode = FeedView
+			return m, nil
 		}
 		// Don't match any key below if the list is filtering
 		if m.list.FilterState() == list.Filtering {
@@ -32,6 +32,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, m.list.NewStatusMessage(statusMessageStyle("Open link in browser"))
 		case key.Matches(msg, m.keys.openInTerminal):
+			if m.viewMode == ArticleView {
+				return m, nil
+			}
 			selectedItem := m.list.SelectedItem().(customItem)
 			if article, err := m.articleService.ExtractArticle(selectedItem.url); err != nil {
 				return m, m.list.NewStatusMessage(statusMessageStyle("Error extracting article"))
@@ -50,9 +53,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					return m, m.list.NewStatusMessage(statusMessageStyle("Error rendering article"))
 				}
 				m.articleViewPort.SetContent(rendered)
-				return m, m.list.NewStatusMessage(statusMessageStyle("Open article in terminal"))
+				m.articleViewPort.GotoTop()
+				return m, nil
 			}
 		case key.Matches(msg, m.keys.refresh):
+			if m.viewMode == ArticleView {
+				return m, nil
+			}
 			return m, tea.Batch(
 				m.list.StartSpinner(),
 				m.list.NewStatusMessage(statusMessageStyle("Updating feed...")),
@@ -74,7 +81,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		statusCmd := m.list.NewStatusMessage(statusMessageStyle("Feed updated!"))
 		setItemsCmd := m.list.SetItems(msg.articles)
 		return m, tea.Batch(statusCmd, setItemsCmd)
-
 	}
 
 	var cmd tea.Cmd
