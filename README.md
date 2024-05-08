@@ -63,3 +63,13 @@ Alternatively, you can point to a different config file using the `-config` flag
 ```bash
 go run cmd/techgo/main.go -config myconfig.yml
 ```
+
+## Screenshots
+
+### Feed view
+
+<p href="url" align="center"><img src="/images/main.png" width="800"></p>
+
+### Article view
+
+<p href="url" align="center"><img src="/images/articleView.png" width="800"></p>
