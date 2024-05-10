@@ -1,6 +1,8 @@
 # TechGo
 
-<p href="url" align="center"><img src="/images/main.png" width="800"></p>
+<p href="url" align="center"><img src="/images/demo.gif" width="800"></p>
+
+(recorded with [vhs](https://github.com/charmbracelet/vhs) which is a little buggy)
 
 **TechGo** is a terminal application that aggregates articles from RSS feeds focused on tech news. The project is written in Go using the wonderful [Bubble Tea framework](https://github.com/charmbracelet/bubbletea).
 
