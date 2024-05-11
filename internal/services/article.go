@@ -6,8 +6,13 @@ import (
 	goose "github.com/advancedlogic/GoOse"
 )
 
+// GooseExtractor interface abstracts the functionality of goose.Goose for testing
+type GooseExtractor interface {
+	ExtractFromURL(url string) (*goose.Article, error)
+}
+
 type ArticleService struct {
-	gooseExtractor goose.Goose
+	gooseExtractor GooseExtractor
 }
 
 var (
@@ -15,7 +20,6 @@ var (
 	articleServiceOnce sync.Once
 )
 
-// Singleton
 func NewArticleService() *ArticleService {
 	articleServiceOnce.Do(func() {
 		gooseExtractor := goose.New()
@@ -25,9 +29,5 @@ func NewArticleService() *ArticleService {
 }
 
 func (service *ArticleService) ExtractArticle(url string) (*goose.Article, error) {
-	article, err := service.gooseExtractor.ExtractFromURL(url)
-	if err != nil {
-		return nil, err
-	}
-	return article, nil
+	return service.gooseExtractor.ExtractFromURL(url)
 }
