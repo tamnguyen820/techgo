@@ -72,7 +72,7 @@ func fetchAllFeedsInParallel(config Config) ([]*RSSFeed, error) {
 	for i, rssFeed := range config.Feeds {
 		go func(index int, rssFeed RSSFeedInfo) {
 			defer wg.Done()
-			feed, err := fetchFeed(rssFeed.URL)
+			feed, err := fetchFeed(rssFeed.URL, gofeed.NewParser())
 			if err != nil {
 				errChan <- err
 				return
@@ -95,9 +95,12 @@ func fetchAllFeedsInParallel(config Config) ([]*RSSFeed, error) {
 	return allFeeds, nil
 }
 
-func fetchFeed(url string) (*gofeed.Feed, error) {
-	fp := gofeed.NewParser()
-	feed, err := fp.ParseURL(url)
+type FeedParser interface {
+	ParseURL(url string) (*gofeed.Feed, error)
+}
+
+func fetchFeed(url string, parser FeedParser) (*gofeed.Feed, error) {
+	feed, err := parser.ParseURL(url)
 	if err != nil {
 		return nil, err
 	}
